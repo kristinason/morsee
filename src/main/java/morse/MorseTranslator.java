@@ -1,36 +1,113 @@
-import morse.MorseTranslator;
+package morse;
 
-import org.junit.jupiter.api.Test;
+import java.util.HashMap;
+import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
 
-public class MorseTranslatorTest {
-   
 
-    @Test 
-    void textToMorse_HEJ() {
-        MorseTranslator t = new MorseTranslator();
-        assertEquals(".... . .---", t.textToMorse("HEJ"));
-    }
+public class MorseTranslator {
+    
+    private Map<Character, String> letterToMorse = new HashMap<>();
+
+    private Map<String, Character> morseToLetter = new HashMap<>();
   
-  
-    @Test
-    void textToMorse_ignoresSpaces() {
-        MorseTranslator t = new MorseTranslator();
-        assertEquals(".... . .-.. .-.. ---", t.textToMorse("H E L L O"));
+
+    public MorseTranslator() {
+        initMaps();
+
     }
 
-    @Test
-    void morseToText_HEJ() {
-        MorseTranslator t = new MorseTranslator(); 
-        assertEquals("HEJ", t.morseToText(".... . .---"));
+
+    private void initMaps() {  
+        add('A', ".-");
+        add('B', "-...");
+        add('C', "-.-.");
+        add('D', "-..");
+        add('E', ".");
+        add('F', "..-.");
+        add('G', "--.");
+        add('H', "....");
+        add('I', "..");
+        add('J', ".---");
+        add('K', "-.-");
+        add('L', ".-..");
+        add('M', "--");
+        add('N', "-.");
+        add('O', "---");
+        add('P', ".--.");
+        add('Q', "--.-");
+        add('R', ".-.");
+        add('S', "...");
+        add('T', "-");
+        add('U', "..-");
+        add('V', "...-");
+        add('W', ".--");
+        add('X', "-..-");
+        add('Y', "-.--");
+        add('Z', "--..");
     }
 
-    @Test
-    void textToMorse_invalidCharacter_throwsException() { 
-        MorseTranslator t = new MorseTranslator(); 
-        assertThrows(IllegalArgumentException.class, 
-)
-                () -> t.textToMorse("HELLO!"));
+
+    private void add(char letter, String morse) {
+       
+        letterToMorse.put(letter, morse);
+      
+        morseToLetter.put(morse, letter);
+       
+    }
+
+
+    public String textToMorse(String text) {
+        
+        String upper = text.toUpperCase();
+        
+        StringBuilder result = new StringBuilder();
+       
+        boolean first = true;
+       
+
+        for (int i = 0; i < upper.length(); i++) {
+           
+            char c = upper.charAt(i);
+           
+
+            if (c == ' ') {               
+                result.append(" / "); 
+               // (/ betyder ordgräns).
+                first = true;            
+               
+                continue;
+            }
+
+            String morse = letterToMorse.get(c); 
+            if (morse == null) throw new IllegalArgumentException("Ogiltig bokstav i text: " + c);
+            
+
+            if (!first) result.append(" ");
+            result.append(morse); 
+            first = false; 
+              }
+        return result.toString().trim();
+      
+    }
+
+    public String morseToText(String morseCode) 
+     {
+        String[] words = morseCode.trim().split("\\s*/\\s*");
+        
+        StringBuilder out = new StringBuilder();
+      
+
+        for (int w = 0; w < words.length; w++) 
+            if (w > 0) out.append(' '); 
+            for (String part : words[w].trim().split("\\s+")) {
+                //Delar upp ordet i enskilda morsekoder (bokstäver).
+                Character letter = morseToLetter.get(part); 
+                if (letter == null) throw new IllegalArgumentException("Ogiltig morsekod: " + part); .
+                out.append(letter);
+            }
+        }
+        return out.toString(); 
     }
 }
+
